@@ -11,6 +11,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import charbitanos.demo.models.Dados.DadosSerie;
 import charbitanos.demo.models.Dados.DadosTemporada;
+import charbitanos.demo.repository.SerieRepository;
 import charbitanos.demo.services.ApiConf;
 import charbitanos.demo.services.ApiConsumer;
 import jakarta.persistence.Entity;
@@ -48,8 +49,18 @@ public class Serie {
     public Serie() {}
     
     public Serie(DadosSerie serie) {
-        
-        titulo = serie.titulo();
+        createSerie(serie);
+    }
+
+    public Serie(DadosSerie serie, SerieRepository repository) {
+        createSerie(serie);
+        repository.save(this);
+    }
+    
+    // Metodo para criar Serie
+    private void createSerie(DadosSerie serie) {
+
+         titulo = serie.titulo();
 
         DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.ENGLISH);
         lancamento = LocalDate.parse(serie.lancamento(), inputFormat);
@@ -79,10 +90,6 @@ public class Serie {
 
     public Long getId() {
          return id; 
-    }
-    
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getTitulo() {

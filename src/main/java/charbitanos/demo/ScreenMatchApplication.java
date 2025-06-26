@@ -150,11 +150,9 @@ public class ScreenMatchApplication implements CommandLineRunner {
 
 		var dadosSerie = ApiConf.MAPPER.readValue(json, DadosSerie.class);
 
-		var serie = new Serie(dadosSerie);
-		
-		System.out.println("\nSerie adicionada com sucesso!\n");
+		new Serie(dadosSerie, repository);
 
-		repository.save(serie);
+		System.out.println("\nSerie adicionada com sucesso!\n");
 	}
 
 	// Para vericar se a entrada do usuario esta valida
