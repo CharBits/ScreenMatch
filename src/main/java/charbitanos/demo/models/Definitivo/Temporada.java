@@ -6,6 +6,7 @@ import java.util.DoubleSummaryStatistics;
 import java.util.List;
 
 import charbitanos.demo.models.Dados.DadosTemporada;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,14 +29,15 @@ public class Temporada {
     private Integer numero;
     private LocalDate lancamento;
 
-    @OneToMany(mappedBy = "temporada")
+    @OneToMany(mappedBy = "temporada", cascade = CascadeType.ALL)
     private List<Episodio> episodios = new ArrayList<>();
 
     private Integer totalEpisodio;
 
     private Double notaMaxEp;
     private Double notaMinEp;
-
+    
+    public Temporada() {}
     public Temporada(DadosTemporada temporada) {
         
         numero = temporada.numero();
@@ -65,7 +67,11 @@ public class Temporada {
     public Serie getSerie() {
         return serie;
     }
-
+    
+    public void setSerie(Serie serie) {
+        this.serie = serie;
+    }
+    
     public Integer getNumero() {
         return numero;
     }

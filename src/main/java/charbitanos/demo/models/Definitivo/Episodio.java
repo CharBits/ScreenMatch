@@ -28,6 +28,7 @@ public class Episodio {
     private LocalDate lancamento;
     private Double nota;
 
+    public Episodio() {}
 
     public Episodio(Integer numeroTemporada, DadosEpisodio episodio) {
         

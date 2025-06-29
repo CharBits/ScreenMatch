@@ -7,13 +7,7 @@ import java.util.DoubleSummaryStatistics;
 import java.util.List;
 import java.util.Locale;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
-import charbitanos.demo.models.Dados.DadosSerie;
-import charbitanos.demo.models.Dados.DadosTemporada;
-import charbitanos.demo.repository.SerieRepository;
-import charbitanos.demo.services.ApiConf;
-import charbitanos.demo.services.ApiConsumer;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -35,55 +29,30 @@ public class Serie {
     private String sinopse;
     private Double nota;
 
-    private Double notaMaxEp;
-    private Double notaMinEp;
-    
     private Integer totalTemporadas;
     private Integer totalEpisodios;
 
-    @OneToMany(mappedBy = "serie")
+    private Double notaMaxEp;
+    private Double notaMinEp;
+    
+    @OneToMany(mappedBy = "serie", cascade = CascadeType.ALL)
     private final List<Temporada> temporadas = new ArrayList<>();
 
     // Construtores
-    
+   
     public Serie() {}
     
-    public Serie(DadosSerie serie) {
-        createSerie(serie);
-    }
+    public Serie(String titulo, String lancamento, String genero, String sinopse, Double nota, Integer totalTemporadas) {
 
-    public Serie(DadosSerie serie, SerieRepository repository) {
-        createSerie(serie);
-        repository.save(this);
-    }
-    
-    // Metodo para criar Serie
-    private void createSerie(DadosSerie serie) {
-
-         titulo = serie.titulo();
+        this.titulo = titulo;
 
         DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.ENGLISH);
-        lancamento = LocalDate.parse(serie.lancamento(), inputFormat);
+        this.lancamento = LocalDate.parse(lancamento, inputFormat);
 
-        genero = serie.genero();
-        sinopse = serie.sinopse();
-        nota = serie.nota();
-        totalTemporadas = serie.totalTemporada();
-
-        addTemporadas();
-
-        int total = 0;
-        for(var temporada : temporadas)
-            total += temporada.getTotalEpisodio();
-        totalEpisodios = total;
-
-        DoubleSummaryStatistics stats = temporadas.stream()
-            .flatMap(t -> t.getEpisodios().stream())
-            .mapToDouble(Episodio::getNota)
-            .summaryStatistics();
-
-        notaMaxEp = stats.getMax();
-        notaMinEp = stats.getMin();
+        this.genero = genero;
+        this.sinopse = sinopse;
+        this.nota = nota;
+        this.totalTemporadas = totalTemporadas;
     }
 
     // Getters e Setters
@@ -116,49 +85,47 @@ public class Serie {
         return totalTemporadas;
     }
     
+    public Integer getTotalEpisodios() {
+        return totalEpisodios;
+    }
+
+    public Double getNotaMinEp() {
+        return notaMinEp;
+    }
+
+    public Double getNotaMaxEp() {
+        return notaMaxEp;
+    }
+
     public List<Temporada> getTemporadas() {
         return temporadas;
     }
+    
 
-    //Metodo para adicionar episodios para a lista da Serie
-    private void addTemporadas() {
+    // Metodos para Informacoes Adicionais
 
-        for(int i = 0;i < totalTemporadas;i++) {
+    public void calcularEstatisticas() {
+        
+        int total = 0;
 
-            String serie = titulo.replace(" ","+").toLowerCase();
+        for(var temporada : temporadas)
+            total += temporada.getTotalEpisodio();
+        totalEpisodios = total;
+        
+        DoubleSummaryStatistics stats = temporadas.stream()
+            .flatMap(t -> t.getEpisodios().stream())
+            .mapToDouble(Episodio::getNota)
+            .summaryStatistics();
 
-            String json = ApiConsumer.request(ApiConf.URL+serie+"&Season="+(i + 1)+ApiConf.API_KEY);
-            try {
-
-                var dadosTemporada = ApiConf.MAPPER.readValue(json,DadosTemporada.class);
-                var temporada = new Temporada(dadosTemporada);
-
-                temporadas.add(temporada);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
-        }
+        notaMaxEp = stats.getMax();
+        notaMinEp = stats.getMin();
     }
 
-    //Metodo para mais informacoes para o Series!
     public String informarDetalhes() {
 
-
-        String extra = String.format("\nTotal De Temporadas: %d\nTotal De Episodios: %d\nMenor Nota: %.1f\nMaior Nota: %.1f\n", totalTemporadas,totalEpisodios,notaMinEp,notaMaxEp);
+        var informacoesExtras = String.format("Total de Temporadas: %d\nTotal de Episodios: %d\nNota Minima de Episodio: %.1f\nNota Maxima de Episodio: %.1f", totalTemporadas, totalEpisodios, notaMinEp, notaMaxEp);
         
-        String infoEp = "";
-
-         // Adicionar informacoes para a variavel infoEp
-        for(var temporada : temporadas) {
-            for(var episodio : temporada.getEpisodios()) {
-                infoEp += "\n";
-                infoEp += episodio.toString();
-                infoEp += "\n";
-                
-            }   
-        }
-
-        return toString() + extra + infoEp;
+        return toString() + informacoesExtras;
     }
 
     @Override

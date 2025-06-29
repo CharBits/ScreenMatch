@@ -13,9 +13,9 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 import charbitanos.demo.models.Dados.DadosSerie;
 import charbitanos.demo.models.Definitivo.Serie;
-import charbitanos.demo.repository.SerieRepository;
 import charbitanos.demo.services.ApiConf;
 import charbitanos.demo.services.ApiConsumer;
+import charbitanos.demo.services.SerieService;
 
 @SpringBootApplication
 public class ScreenMatchApplication implements CommandLineRunner {
@@ -29,10 +29,9 @@ public class ScreenMatchApplication implements CommandLineRunner {
 
 	private String json;
 
+    @Autowired
+    private SerieService serieService;
 
-	@Autowired
-	private SerieRepository repository;
-	
 	private List<Serie> series;
 
 	@Override
@@ -40,14 +39,14 @@ public class ScreenMatchApplication implements CommandLineRunner {
 
 		boolean sair = false;
 
-		// Atualizar o repositorio do programaO
-		series = repository.findAll();
 
 		// Programa inteiro dentro de um while!
 		while(!sair) {
 
+		    // Atualizar o repositorio do programa
+		    series = serieService.atualizarRepositorio();
 			
-			System.out.println("""
+            System.out.println("""
 					1 - Adicionar um Titulo
 					2 - Remover um Titulo
 					3 - Informacoes de um Titulo				
@@ -108,8 +107,6 @@ public class ScreenMatchApplication implements CommandLineRunner {
 	
 	// Responsavel por listar e atualizar o repositorio do programa!
 	private void listagemSerie() {
-		
-		series = repository.findAll();
 
 		for(int i = 0;i < series.size();i++) {
 			System.out.println((i + 1) + " - " + series.get(i).getTitulo());
@@ -150,8 +147,9 @@ public class ScreenMatchApplication implements CommandLineRunner {
 
 		var dadosSerie = ApiConf.MAPPER.readValue(json, DadosSerie.class);
 
-		new Serie(dadosSerie, repository);
-
+		// Cria a Serie e salva no banco de dados
+		serieService.createSerie(dadosSerie);
+        
 		System.out.println("\nSerie adicionada com sucesso!\n");
 	}
 
