@@ -8,6 +8,7 @@ import java.util.List;
 import charbitanos.demo.models.Dados.DadosTemporada;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -29,7 +30,7 @@ public class Temporada {
     private Integer numero;
     private LocalDate lancamento;
 
-    @OneToMany(mappedBy = "temporada", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "temporada", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Episodio> episodios = new ArrayList<>();
 
     private Integer totalEpisodio;

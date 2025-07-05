@@ -116,12 +116,11 @@ public class ScreenMatchApplication implements CommandLineRunner {
 	private void informacoesSerie() {
 		
 		System.out.println("\nQual titulo voce quer ver as informacoes: ");
-		
 	
 		int command = escolherSerie(() -> System.out.print("\nQual Titulo voce quer informacoes?: "));
-
-		System.out.println("\n"+series.get(command - 1).informarDetalhes()+"\n");
-	}
+        
+		System.out.println("\n"+series.get(command - 1).informarDetalhes()+"\n\n"+series.get(command - 1).informarEpisodios()+"\n"); 
+    }
 
 	private void removerSerie() {
 
@@ -130,7 +129,8 @@ public class ScreenMatchApplication implements CommandLineRunner {
 		int command = escolherSerie(() -> System.out.print("\nQual Titulo voce quer remover?: "));
 
 		System.out.println("Removendo...");
-		series.remove(command - 1);
+        serieService.removeDB(series.get(command - 1)); // Remover Serie do Banco de Dados 
+		series.remove(command - 1); // Remover do repositorio do programa
 		System.out.println("Serie removida com sucesso!");
 	}
 

@@ -42,6 +42,14 @@ public class SerieService {
         return repository.save(serie); // salva de novo com temporadas
     }
 
+    @Transactional
+    public String informarDetalhes(Long id) {
+        Serie serie = repository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Série não encontrada"));
+
+        return serie.informarDetalhes();
+    }
+
     private void adicionarTemporadas(Serie serie) {
         for (int i = 0; i < serie.getTotalTemporadas(); i++) {
             String titulo = serie.getTitulo().replace(" ", "+").toLowerCase();
@@ -52,13 +60,18 @@ public class SerieService {
                 var dadosTemporada = ApiConf.MAPPER.readValue(json, DadosTemporada.class);
                 var temporada = new Temporada(dadosTemporada);
                 
-                temporada.setSerie(serie); // MUITO IMPORTANTE
+                temporada.setSerie(serie); // definir o key estrangeiro para as temporadas
+                temporada.getEpisodios().forEach(e -> e.setTemporada(temporada)); // E para os episodios
                 serie.getTemporadas().add(temporada);
 
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void removeDB(Serie serie) {
+        repository.delete(serie);
     }
 
     public List<Serie> atualizarRepositorio() {
