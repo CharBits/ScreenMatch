@@ -119,7 +119,7 @@ public class ScreenMatchApplication implements CommandLineRunner {
 	
 		int command = escolherSerie(() -> System.out.print("\nQual Titulo voce quer informacoes?: "));
         
-		System.out.println("\n"+series.get(command - 1).informarDetalhes()+"\n\n"+series.get(command - 1).informarEpisodios()+"\n"); 
+		System.out.println("\n"+serieService.informarDetalhes(series.get(command - 1).getId())+"\n"); 
     }
 
 	private void removerSerie() {

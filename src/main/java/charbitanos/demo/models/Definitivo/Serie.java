@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -37,7 +36,7 @@ public class Serie {
     private Double notaMaxEp;
     private Double notaMinEp;
     
-    @OneToMany(mappedBy = "serie", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "serie", cascade = CascadeType.ALL)
     private final List<Temporada> temporadas = new ArrayList<>();
 
     // Construtores
@@ -101,8 +100,7 @@ public class Serie {
 
     public List<Temporada> getTemporadas() {
         return temporadas;
-    }
-    
+    } 
 
     // Metodos para Informacoes Adicionais
 
@@ -127,17 +125,13 @@ public class Serie {
 
         var informacoesExtras = String.format("Total de Temporadas: %d\nTotal de Episodios: %d\nNota Minima de Episodio: %.1f\nNota Maxima de Episodio: %.1f", totalTemporadas, totalEpisodios, notaMinEp, notaMaxEp);
         
-        return toString() + informacoesExtras;
-    }
-    
-    public String informarEpisodios() {
-
-        String informacoesEpisodios = getTemporadas().stream()
+        String infoEps = temporadas.stream()
                                         .flatMap(t -> t.getEpisodios().stream())
                                         .map(e -> e.toString())
-                                        .collect(Collectors.joining("\n\n"));  
-        return informacoesEpisodios; 
-    }
+                                        .collect(Collectors.joining("\n\n"));
+
+        return toString() + informacoesExtras + infoEps;
+    } 
 
     @Override
     public final String toString() {

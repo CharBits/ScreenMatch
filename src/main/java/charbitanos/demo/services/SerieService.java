@@ -1,6 +1,7 @@
 package charbitanos.demo.services;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,20 +35,11 @@ public class SerieService {
         
         Serie serie = new Serie(titulo, lancamento, genero, sinopse, nota, totalTemporadas);
         repository.save(serie); // salva primeiro para gerar o ID
-
+                                //
         adicionarTemporadas(serie); // agora pode adicionar temporadas
-        
         serie.calcularEstatisticas();
 
         return repository.save(serie); // salva de novo com temporadas
-    }
-
-    @Transactional
-    public String informarDetalhes(Long id) {
-        Serie serie = repository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Série não encontrada"));
-
-        return serie.informarDetalhes();
     }
 
     private void adicionarTemporadas(Serie serie) {
@@ -69,6 +61,17 @@ public class SerieService {
             }
         }
     }
+   
+
+    @Transactional
+    public String informarDetalhes(Long id) {
+        
+         Serie serie = repository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Série não encontrada"));
+
+        return serie.informarDetalhes();
+    }
+
 
     public void removeDB(Serie serie) {
         repository.delete(serie);
