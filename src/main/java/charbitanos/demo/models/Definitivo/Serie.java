@@ -130,7 +130,7 @@ public class Serie {
                                         .map(e -> e.toString())
                                         .collect(Collectors.joining("\n\n"));
 
-        return toString() + informacoesExtras + infoEps;
+        return toString() +"\n"+ informacoesExtras +"\n\n\n"+ infoEps;
     } 
 
     @Override

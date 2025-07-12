@@ -1,5 +1,6 @@
 package charbitanos.demo;
 
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -24,7 +25,7 @@ public class ScreenMatchApplication implements CommandLineRunner {
 		SpringApplication.run(ScreenMatchApplication.class, args);
 	}
 
-	private final int VALID_COMMANDS[] = {1,2,3,0};
+	private final int VALID_COMMANDS[] = {1,2,3,4,0};
 	private Scanner scanner = new Scanner(System.in);
 
 	private String json;
@@ -39,18 +40,13 @@ public class ScreenMatchApplication implements CommandLineRunner {
 
 		boolean sair = false;
 
-
 		// Programa inteiro dentro de um while!
 		while(!sair) {
 
 		    // Atualizar o repositorio do programa
 		    series = serieService.atualizarRepositorio();
 			
-            System.out.println("""
-					1 - Adicionar um Titulo
-					2 - Remover um Titulo
-					3 - Informacoes de um Titulo				
-					0 - Sair""");
+            System.out.println("=-----------------------------------=\n|   1 - Adicionar um Titulo         |\n|   2 - Remover um Titulo           |\n|   3 - Listar Titulos Buscados     |\n|   4 - Informacoes de um Titulo    |\n|   0 - Sair                        |\n=-----------------------------------=");
 			
 			Integer comandoValido = checkCommand();
 
@@ -62,16 +58,35 @@ public class ScreenMatchApplication implements CommandLineRunner {
 				    if(temSerie(series))removerSerie();
 					break;
 				case 3:
+                    if(temSerie(series))listarTitulosBuscados();
+                    break;
+                case 4:
 					if(temSerie(series))informacoesSerie();
-					break;
-				default:
+                    break;
+                default:
 					System.out.println("Saindo do programa...");
 					sair = true;
 					return;
 			}
 		}
 	}
-	
+    
+    private void listarTitulosBuscados() {
+        
+        System.out.println("""
+
+            =-------------------------=
+            | Listar Titulos Buscados |
+            =-------------------------=
+            """);
+
+        for(var serie : series) {
+            System.out.println(serie.getTitulo().toUpperCase());
+        }
+
+        System.out.println("\nQuantidade: " + series.size()+"\n");
+    }
+
 	private boolean temSerie(List<Serie> series) {
 		
 		if(!series.isEmpty()) {
@@ -84,16 +99,26 @@ public class ScreenMatchApplication implements CommandLineRunner {
 	}
 
 	private int escolherSerie(Runnable question) {
-
-		listagemSerie();
+		
+        listagemSerie();
+        
+        System.out.println("\nAviso: O comando tem que ser um numero (de 1 a "+series.size()+")");
 
 		boolean valido = false;
 
 		while(!valido) {
 			
 			question.run();
-			int command = scanner.nextInt();
 			
+
+            int command = 0;
+
+            try {
+                command = scanner.nextInt();
+            } catch (InputMismatchException e) {
+                System.out.println("Comando invalido! O comando tem que ser um numero!");
+            }
+
 			if(command != 0 && command >= 1 && command <= series.size()) {
 				valido = true;
 				scanner.nextLine(); // Para limpar o buffer (\n esta existindo ainda)
@@ -115,35 +140,64 @@ public class ScreenMatchApplication implements CommandLineRunner {
 
 	private void informacoesSerie() {
 		
-		System.out.println("\nQual titulo voce quer ver as informacoes: ");
-	
+        System.out.println(""" 
+
+            =--------------------------=
+            | Informacoes de um Titulo |
+            =--------------------------=
+            """);
+
 		int command = escolherSerie(() -> System.out.print("\nQual Titulo voce quer informacoes?: "));
         
+        System.out.println(""" 
+            
+            =----------------------=
+            | Informacoes da Serie |
+            =----------------------=""");
+
 		System.out.println("\n"+serieService.informarDetalhes(series.get(command - 1).getId())+"\n"); 
     }
 
 	private void removerSerie() {
+        
+        System.out.println("""
 
-		System.out.println("\nSeries que estao diponiveis para a remocao:");
+            =-------------------=
+            | Remover um Titulo |
+            =-------------------=
+            """);
 	
 		int command = escolherSerie(() -> System.out.print("\nQual Titulo voce quer remover?: "));
 
-		System.out.println("Removendo...");
+		System.out.println("\nRemovendo...");
         serieService.removeDB(series.get(command - 1)); // Remover Serie do Banco de Dados 
 		series.remove(command - 1); // Remover do repositorio do programa
-		System.out.println("Serie removida com sucesso!");
-	}
+		System.out.println("\nSerie removida com sucesso!\n");
+	}		
 
 	private void adicionarSerie() throws JsonMappingException, JsonProcessingException {
-		
+	    
+        System.out.println(""" 
+            
+            =---------------------=
+            | Adicionar um Titulo |
+            =---------------------=""");
+        
 		String nome;
-
+        
+        do {
 		System.out.print("\nQual Serie voce quer adicionar?: ");
 		nome = (scanner.nextLine()).replace(" ","+");
 		
-		final var FULL_URL = ApiConf.URL + nome + ApiConf.API_KEY;
+		final String FULL_URL = ApiConf.URL + nome + ApiConf.API_KEY;
 
 		json = ApiConsumer.request(FULL_URL);
+
+        if(json.toUpperCase().contains("ERROR")) {
+            System.out.println("\nSerie mensionada nao existente!\n");
+        }
+        
+        } while(json.toUpperCase().contains("ERROR"));
 
 		var dadosSerie = ApiConf.MAPPER.readValue(json, DadosSerie.class);
 
