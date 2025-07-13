@@ -46,7 +46,14 @@ public class ScreenMatchApplication implements CommandLineRunner {
 		    // Atualizar o repositorio do programa
 		    series = serieService.atualizarRepositorio();
 			
-            System.out.println("=-----------------------------------=\n|   1 - Adicionar um Titulo         |\n|   2 - Remover um Titulo           |\n|   3 - Listar Titulos Buscados     |\n|   4 - Informacoes de um Titulo    |\n|   0 - Sair                        |\n=-----------------------------------=");
+            System.out.println("""
+                                =-----------------------------------=
+                                |   1 - Adicionar um Titulo         |
+                                |   2 - Remover um Titulo           |
+                                |   3 - Listar Titulos Buscados     |
+                                |   4 - Informacoes de um Titulo    |
+                                |   0 - Sair                        |
+                                =-----------------------------------=""");
 			
 			Integer comandoValido = checkCommand();
 
