@@ -80,4 +80,6 @@ public class SerieService {
     public List<Serie> atualizarRepositorio() {
         return repository.findAll();
     }
+
+
 }

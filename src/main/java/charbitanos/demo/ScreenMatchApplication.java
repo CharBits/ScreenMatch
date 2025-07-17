@@ -2,6 +2,7 @@ package charbitanos.demo;
 
 import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 import charbitanos.demo.models.Dados.DadosSerie;
 import charbitanos.demo.models.Definitivo.Serie;
+import charbitanos.demo.repository.SerieRepository;
 import charbitanos.demo.services.ApiConf;
 import charbitanos.demo.services.ApiConsumer;
 import charbitanos.demo.services.SerieService;
@@ -25,14 +27,17 @@ public class ScreenMatchApplication implements CommandLineRunner {
 		SpringApplication.run(ScreenMatchApplication.class, args);
 	}
 
-	private final int VALID_COMMANDS[] = {1,2,3,4,0};
+	private final int VALID_COMMANDS[] = {1,2,3,4,5,0};
 	private Scanner scanner = new Scanner(System.in);
 
 	private String json;
+ 
+    @Autowired
+    private SerieRepository repository;
 
     @Autowired
     private SerieService serieService;
-
+    
 	private List<Serie> series;
 
 	@Override
@@ -47,13 +52,14 @@ public class ScreenMatchApplication implements CommandLineRunner {
 		    series = serieService.atualizarRepositorio();
 			
             System.out.println("""
-                                =-----------------------------------=
-                                |   1 - Adicionar um Titulo         |
-                                |   2 - Remover um Titulo           |
-                                |   3 - Listar Titulos Buscados     |
-                                |   4 - Informacoes de um Titulo    |
-                                |   0 - Sair                        |
-                                =-----------------------------------=""");
+                =-----------------------------------=
+                |   1 - Adicionar um Titulo         |
+                |   2 - Remover um Titulo           |
+                |   3 - Listar Titulos Buscados     |
+                |   4 - Informacoes de um Titulo    |
+                |   5 - Encontrar um Titulo         |
+                |   0 - Sair                        |
+                =-----------------------------------=""");
 			
 			Integer comandoValido = checkCommand();
 
@@ -70,6 +76,9 @@ public class ScreenMatchApplication implements CommandLineRunner {
                 case 4:
 					if(temSerie(series))informacoesSerie();
                     break;
+                case 5:
+                    if(temSerie(series))encontrarTitulo();
+                    break;
                 default:
 					System.out.println("Saindo do programa...");
 					sair = true;
@@ -78,6 +87,27 @@ public class ScreenMatchApplication implements CommandLineRunner {
 		}
 	}
     
+    private void encontrarTitulo() {
+        
+        System.out.println("""
+            
+            =---------------------=
+            | Encontrar um Titulo |
+            =---------------------=""");
+
+        System.out.print("\nQual Titulo voce quer encontrar?: ");
+        String titulo = scanner.nextLine();
+
+        Optional<Serie> serieEncontrada = repository.findByTituloContainingIgnoreCase(titulo); 
+        
+        if(serieEncontrada.isPresent()) {
+            System.out.println("\nSerie encontrada com sucesso!:\n");
+            System.out.println(serieEncontrada.get()+"\n");
+        } else {
+            System.out.println("\nSerie nao encontrada...\n");
+        }
+    }
+
     private void listarTitulosBuscados() {
         
         System.out.println("""
