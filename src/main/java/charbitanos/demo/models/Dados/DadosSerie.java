@@ -25,8 +25,10 @@ public record DadosSerie
     Double nota,
 
 @JsonAlias("totalSeasons") 
-    Integer totalTemporada
-    
+    Integer totalTemporada,
+
+@JsonAlias("Actors")
+    String atores
 ) 
 
 {

@@ -1,7 +1,6 @@
 package charbitanos.demo.services;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,9 +30,9 @@ public class SerieService {
         var sinopse = dadosSerie.sinopse();
         var nota = dadosSerie.nota();
         var totalTemporadas = dadosSerie.totalTemporada();
+        var atores = dadosSerie.atores();
         
-        
-        Serie serie = new Serie(titulo, lancamento, genero, sinopse, nota, totalTemporadas);
+        Serie serie = new Serie(titulo, lancamento, genero, sinopse, nota, totalTemporadas, atores);
         repository.save(serie); // salva primeiro para gerar o ID
                                 //
         adicionarTemporadas(serie); // agora pode adicionar temporadas

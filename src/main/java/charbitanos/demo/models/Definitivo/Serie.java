@@ -29,13 +29,15 @@ public class Serie {
     private String genero;
     private String sinopse;
     private Double nota;
-
+    
     private Integer totalTemporadas;
     private Integer totalEpisodios;
+    
+    private String atores;
 
     private Double notaMaxEp;
     private Double notaMinEp;
-    
+
     @OneToMany(mappedBy = "serie", cascade = CascadeType.ALL)
     private final List<Temporada> temporadas = new ArrayList<>();
 
@@ -43,7 +45,7 @@ public class Serie {
    
     public Serie() {}
     
-    public Serie(String titulo, String lancamento, String genero, String sinopse, Double nota, Integer totalTemporadas) {
+    public Serie(String titulo, String lancamento, String genero, String sinopse, Double nota, Integer totalTemporadas, String atores) {
 
         this.titulo = titulo;
 
@@ -54,6 +56,8 @@ public class Serie {
         this.sinopse = sinopse;
         this.nota = nota;
         this.totalTemporadas = totalTemporadas;
+
+        this.atores = atores;
     }
 
     // Getters e Setters
@@ -101,6 +105,10 @@ public class Serie {
     public List<Temporada> getTemporadas() {
         return temporadas;
     } 
+    
+    public String getAtores() {
+        return atores;
+    }
 
     // Metodos para Informacoes Adicionais
 

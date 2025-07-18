@@ -52,14 +52,14 @@ public class ScreenMatchApplication implements CommandLineRunner {
 		    series = serieService.atualizarRepositorio();
 			
             System.out.println("""
-                =-----------------------------------=
-                |   1 - Adicionar um Titulo         |
-                |   2 - Remover um Titulo           |
-                |   3 - Listar Titulos Buscados     |
-                |   4 - Informacoes de um Titulo    |
-                |   5 - Encontrar um Titulo         |
-                |   0 - Sair                        |
-                =-----------------------------------=""");
+                =--------------------------------------=
+                |   1 - Adicionar um Titulo            |
+                |   2 - Remover um Titulo              |
+                |   3 - Listar Titulos Adicionados     |
+                |   4 - Informacoes de um Titulo       |
+                |   5 - Encontrar um Titulo            |
+                |   0 - Sair                           |
+                =--------------------------------------=""");
 			
 			Integer comandoValido = checkCommand();
 
@@ -71,7 +71,7 @@ public class ScreenMatchApplication implements CommandLineRunner {
 				    if(temSerie(series))removerSerie();
 					break;
 				case 3:
-                    if(temSerie(series))listarTitulosBuscados();
+                    if(temSerie(series))listarTitulosAdicionados();
                     break;
                 case 4:
 					if(temSerie(series))informacoesSerie();
@@ -87,18 +87,12 @@ public class ScreenMatchApplication implements CommandLineRunner {
 		}
 	}
     
-    private void encontrarTitulo() {
-        
-        System.out.println("""
-            
-            =---------------------=
-            | Encontrar um Titulo |
-            =---------------------=""");
+    private void encontrarTituloPeloNome() {
 
-        System.out.print("\nQual Titulo voce quer encontrar?: ");
+        System.out.print("Qual Titulo voce quer encontrar?: ");
         String titulo = scanner.nextLine();
 
-        Optional<Serie> serieEncontrada = repository.findByTituloContainingIgnoreCase(titulo); 
+        Optional<Serie> serieEncontrada = repository.findFirstByTituloStartingWithIgnoreCase(titulo); 
         
         if(serieEncontrada.isPresent()) {
             System.out.println("\nSerie encontrada com sucesso!:\n");
@@ -107,14 +101,64 @@ public class ScreenMatchApplication implements CommandLineRunner {
             System.out.println("\nSerie nao encontrada...\n");
         }
     }
+    
+    private void encontrarTituloPeloAutor() {
+        
+        System.out.print("Digite o nome do Autor: ");
+        String nome = scanner.nextLine();
 
-    private void listarTitulosBuscados() {
+        List<Serie> seriesEncontradas = repository.findByAtoresContainingIgnoreCase(nome);
+         
+        if(seriesEncontradas.size() > 0) {
+            
+            System.out.println("\nTitulos que ele trabalhou:\n");
+            seriesEncontradas.forEach(s -> System.out.println(s.getTitulo()));
+            System.out.print("\n");
+
+        } else {
+            System.out.println("Ator nao foi encontrado nos Titulos Disponiveis");
+        }
+    }
+
+    private void encontrarTitulo() {
+        
+        System.out.println("""
+            
+            =---------------------=
+            | Encontrar um Titulo |
+            =---------------------=
+            """);
+        
+        System.out.println("Encontrar um titulo pelo seu: ");
+        System.out.println("1- Nome\n2- Autor\n");
+
+        try {
+            
+            System.out.print("Digite: ");
+            int command = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (command) {
+                case 1:
+                    encontrarTituloPeloNome();
+                    break;
+                case 2:
+                    encontrarTituloPeloAutor();
+                    break;
+            }
+
+        } catch (InputMismatchException e) {
+            System.out.println("Comando invalido! O comando tem que ser um numero!");
+        }       
+   }
+
+    private void listarTitulosAdicionados() {
         
         System.out.println("""
 
-            =-------------------------=
-            | Listar Titulos Buscados |
-            =-------------------------=
+            =----------------------------=
+            | Listar Titulos Adicionados |
+            =----------------------------=
             """);
 
         for(var serie : series) {
@@ -147,7 +191,6 @@ public class ScreenMatchApplication implements CommandLineRunner {
 			
 			question.run();
 			
-
             int command = 0;
 
             try {
