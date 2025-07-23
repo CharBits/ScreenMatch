@@ -27,7 +27,7 @@ public class ScreenMatchApplication implements CommandLineRunner {
 		SpringApplication.run(ScreenMatchApplication.class, args);
 	}
 
-	private final int VALID_COMMANDS[] = {1,2,3,4,5,0};
+	private final int VALID_COMMANDS[] = {1,2,3,4,5,6,0};
 	private Scanner scanner = new Scanner(System.in);
 
 	private String json;
@@ -58,6 +58,7 @@ public class ScreenMatchApplication implements CommandLineRunner {
                 |   3 - Listar Titulos Adicionados     |
                 |   4 - Informacoes de um Titulo       |
                 |   5 - Encontrar um Titulo            |
+                |   6 - Buscar os Top 5                |
                 |   0 - Sair                           |
                 =--------------------------------------=""");
 			
@@ -79,6 +80,9 @@ public class ScreenMatchApplication implements CommandLineRunner {
                 case 5:
                     if(temSerie(series))encontrarTitulo();
                     break;
+                case 6:
+                    if(temSerie(series)) titulosTop5();
+                    break;
                 default:
 					System.out.println("Saindo do programa...");
 					sair = true;
@@ -87,6 +91,18 @@ public class ScreenMatchApplication implements CommandLineRunner {
 		}
 	}
     
+    private void titulosTop5() {
+        List<Serie> seriesTop5 = repository.findTop5ByOrderByNotaDesc();
+        
+        System.out.print("\n");
+
+        for(int i = 0; i < seriesTop5.size(); i++) {
+            System.out.println(String.format("%d. %s (%.2f)", i+1, seriesTop5.get(i).getTitulo(), seriesTop5.get(i).getNota()));
+        }
+
+        System.out.print("\n");
+    }
+
     private void encontrarTituloPeloNome() {
 
         System.out.print("Qual Titulo voce quer encontrar?: ");
