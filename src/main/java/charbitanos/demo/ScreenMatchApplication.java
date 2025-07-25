@@ -91,8 +91,71 @@ public class ScreenMatchApplication implements CommandLineRunner {
 			}
 		}
 	}
+   
+    private void encontrarTitulosApartirDaNotaETemporada() {
+        
+        System.out.println("""
+
+                =-----------------------------------------------=
+                | Encontrar Titulos apartir da Nota e Temporada |
+                =-----------------------------------------------=
+                """);
+
+        System.out.print("Nota Minima: ");
+        var notaMinima = scanner.nextDouble();
+        scanner.nextLine();
+
+        System.out.print("Temporada Maxima: ");
+        var temporadaMaxima = scanner.nextInt();
+        scanner.nextLine();
+
+        List<Serie> seriesNotaMinETemporadasMax = repository.findByNotaGreaterThanEqualAndNotaGreaterThanEqual(notaMinima,temporadaMaxima);
+        
+        System.out.print("\n");
+
+        seriesNotaMinETemporadasMax.forEach(s -> System.out.printf("%s (Nota %.2f, Temporada(s) %d)\n", s.getTitulo(), s.getNota(), s.getTotalTemporadas()));
+    }
+
+    private void encontrarTitulosApartirDaTemporada() {
+        
+        System.out.println(""" 
+                =----------------------------------------------------------------=
+                | Encontrar Titulos apartir da definicao de maximo de Temporadas |
+                =----------------------------------------------------------------=
+                """);
+
+        System.out.print("Maximo de Temporadas: ");
+        var temporadasMaxima = scanner.nextInt();
+        scanner.nextLine();
+
+        List<Serie> seriesTemporadasMaxima = repository.findByTotalTemporadasLessThanEqual(temporadasMaxima);
+        
+        System.out.print("\n");
+
+        seriesTemporadasMaxima.forEach(s -> System.out.printf("%s (Temporada(s) %d)\n", s.getTitulo(), s.getTotalTemporadas()));
+    }
     
-    private void encontrarTituloPorGenero() {
+    private void encontrarTitulosApartirDaNota() {
+        
+        System.out.println("""
+                
+                =-------------------------------------------------------=
+                | Encontrar Titulos apartir da definicao da Nota minima |
+                =-------------------------------------------------------=
+                """);
+        
+        System.out.print("Nota Minima: ");
+        var notaMinima = scanner.nextDouble();
+        scanner.nextLine();
+        
+        List<Serie> seriesNotaMinima = repository.findByNotaGreaterThanEqual(notaMinima);
+        
+        System.out.print("\n");
+
+        seriesNotaMinima.forEach(s -> System.out.printf("%s (Nota %.2f)\n", s.getTitulo(), s.getNota()));
+    }
+
+    private void encontrarTitulosPorGenero() {
         
         System.out.println(""" 
                 
@@ -139,8 +202,18 @@ public class ScreenMatchApplication implements CommandLineRunner {
                 =--------------------------=
                 """);
 
-        System.out.println("Encontrar esses Titulos pelo:\n\n1- Top 5\n2- Genero\n");
-    
+        System.out.println("""
+                =----------------------------------=
+                | Encontrar esses Titulos pelo(a): |
+                |                                  |
+                | 1- Top 5                         |
+                | 2- Genero                        |
+                | 3- Nota                          |
+                | 4- Temporadas                    |
+                | 5- Nota e Temporadas             |   
+                =----------------------------------=
+                """);
+
         try {
         System.out.print("Digite: ");
         int command = scanner.nextInt();
@@ -151,7 +224,16 @@ public class ScreenMatchApplication implements CommandLineRunner {
                 titulosTop5();
                 break;
             case 2:
-                encontrarTituloPorGenero();
+                encontrarTitulosPorGenero();
+                break;
+            case 3:
+                encontrarTitulosApartirDaNota(); 
+                break;
+            case 4:
+                encontrarTitulosApartirDaTemporada();                
+                break;
+            case 5:
+                encontrarTitulosApartirDaNotaETemporada(); 
                 break;
         }
 
