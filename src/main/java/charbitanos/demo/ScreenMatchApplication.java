@@ -13,6 +13,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
+import charbitanos.demo.models.Categoria;
 import charbitanos.demo.models.Dados.DadosSerie;
 import charbitanos.demo.models.Definitivo.Serie;
 import charbitanos.demo.repository.SerieRepository;
@@ -58,7 +59,7 @@ public class ScreenMatchApplication implements CommandLineRunner {
                 |   3 - Listar Titulos Adicionados     |
                 |   4 - Informacoes de um Titulo       |
                 |   5 - Encontrar um Titulo            |
-                |   6 - Buscar os Top 5                |
+                |   6 - Encontrar varios Titulos       |
                 |   0 - Sair                           |
                 =--------------------------------------=""");
 			
@@ -81,7 +82,7 @@ public class ScreenMatchApplication implements CommandLineRunner {
                     if(temSerie(series))encontrarTitulo();
                     break;
                 case 6:
-                    if(temSerie(series)) titulosTop5();
+                    if(temSerie(series))encontrarVariosTitulos();
                     break;
                 default:
 					System.out.println("Saindo do programa...");
@@ -91,16 +92,72 @@ public class ScreenMatchApplication implements CommandLineRunner {
 		}
 	}
     
+    private void encontrarTituloPorGenero() {
+        
+        System.out.println(""" 
+                
+                =-----------------------------=
+                | Encontrar Titulo por Genero |
+                =-----------------------------=
+                """);
+        
+        System.out.print("Qual genero de Serie voce procura?: ");
+        var nomeGenero = scanner.nextLine();
+
+        Categoria categoria = Categoria.fromPortugues(nomeGenero);
+
+        List<Serie> seriesPorGenero = repository.findByGenero(categoria);
+
+        seriesPorGenero.forEach(s -> System.out.println(String.format("%s (%s)", s.getTitulo(), categoria))); 
+    }
+
     private void titulosTop5() {
+
+        
+        System.out.println(""" 
+
+                =---------------=
+                | Top 5 Titulos |
+                =---------------=
+                """);
+
         List<Serie> seriesTop5 = repository.findTop5ByOrderByNotaDesc();
         
-        System.out.print("\n");
-
         for(int i = 0; i < seriesTop5.size(); i++) {
             System.out.println(String.format("%d. %s (%.2f)", i+1, seriesTop5.get(i).getTitulo(), seriesTop5.get(i).getNota()));
         }
 
         System.out.print("\n");
+    }
+
+    private void encontrarVariosTitulos() {
+        
+        System.out.println("""
+               
+                =--------------------------=
+                | Encontrar varios Titulos |
+                =--------------------------=
+                """);
+
+        System.out.println("Encontrar esses Titulos pelo:\n\n1- Top 5\n2- Genero\n");
+    
+        try {
+        System.out.print("Digite: ");
+        int command = scanner.nextInt();
+        scanner.nextLine();
+
+        switch (command) {
+            case 1:
+                titulosTop5();
+                break;
+            case 2:
+                encontrarTituloPorGenero();
+                break;
+        }
+
+        } catch (InputMismatchException e) {
+            System.out.println("Comando invalido! O comando tem que ser um numero!");
+        }
     }
 
     private void encontrarTituloPeloNome() {
@@ -290,7 +347,7 @@ public class ScreenMatchApplication implements CommandLineRunner {
 		json = ApiConsumer.request(FULL_URL);
 
         if(json.toUpperCase().contains("ERROR")) {
-            System.out.println("\nSerie mensionada nao existente!\n");
+            System.out.println("\nEssa Serie nao existente!\n");
         }
         
         } while(json.toUpperCase().contains("ERROR"));

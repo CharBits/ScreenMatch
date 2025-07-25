@@ -8,8 +8,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+import charbitanos.demo.models.Categoria;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -26,7 +30,8 @@ public class Serie {
     
     private String titulo;
     private LocalDate lancamento;
-    private String genero;
+    @Enumerated(EnumType.STRING)
+    private Categoria genero;
     private String sinopse;
     private Double nota;
     
@@ -34,7 +39,7 @@ public class Serie {
     private Integer totalEpisodios;
     
     private String atores;
-
+    
     private Double notaMaxEp;
     private Double notaMinEp;
 
@@ -52,7 +57,7 @@ public class Serie {
         DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.ENGLISH);
         this.lancamento = LocalDate.parse(lancamento, inputFormat);
 
-        this.genero = genero;
+        this.genero = Categoria.fromString(genero.split(",")[0].trim());
         this.sinopse = sinopse;
         this.nota = nota;
         this.totalTemporadas = totalTemporadas;
@@ -74,7 +79,7 @@ public class Serie {
         return lancamento;
     }
 
-    public String getGenero() {
+    public Categoria getGenero() {
         return genero;
     }
 

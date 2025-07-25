@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import charbitanos.demo.models.Categoria;
 import charbitanos.demo.models.Definitivo.Serie;
 
 public interface SerieRepository extends JpaRepository<Serie,Long> {
@@ -14,4 +15,6 @@ public interface SerieRepository extends JpaRepository<Serie,Long> {
 	List<Serie> findByAtoresContainingIgnoreCase(String nome);
 
     List<Serie> findTop5ByOrderByNotaDesc();
+
+	List<Serie> findByGenero(Categoria categoria);
 }
