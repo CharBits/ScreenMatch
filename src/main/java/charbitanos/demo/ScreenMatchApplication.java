@@ -91,7 +91,8 @@ public class ScreenMatchApplication implements CommandLineRunner {
 			}
 		}
 	}
-   
+
+    //Metodos para encontrar varios titulo
     private void encontrarTitulosApartirDaNotaETemporada() {
         
         System.out.println("""
@@ -109,7 +110,7 @@ public class ScreenMatchApplication implements CommandLineRunner {
         var temporadaMaxima = scanner.nextInt();
         scanner.nextLine();
 
-        List<Serie> seriesNotaMinETemporadasMax = repository.findByNotaGreaterThanEqualAndNotaGreaterThanEqual(notaMinima,temporadaMaxima);
+        List<Serie> seriesNotaMinETemporadasMax = repository.seriesPorTemporadaEAvaliacao(notaMinima, temporadaMaxima);
         
         System.out.print("\n");
 
@@ -242,6 +243,8 @@ public class ScreenMatchApplication implements CommandLineRunner {
         }
     }
 
+
+    // Metodos para encontrar um Titulo
     private void encontrarTituloPeloNome() {
 
         System.out.print("Qual Titulo voce quer encontrar?: ");
@@ -307,6 +310,8 @@ public class ScreenMatchApplication implements CommandLineRunner {
         }       
    }
 
+
+   // Outros
     private void listarTitulosAdicionados() {
         
         System.out.println("""
