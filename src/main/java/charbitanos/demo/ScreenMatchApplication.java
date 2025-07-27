@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.env.YamlPropertySourceLoader;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -95,7 +96,34 @@ public class ScreenMatchApplication implements CommandLineRunner {
 			}
 		}
 	}
-    
+
+    //Metodos para encontrar varios Episodios
+    private void episodiosTop5() {
+        
+        System.out.println("""
+                =-----------------=
+                | Episodios Top 5 |
+                =-----------------=
+                """);
+        
+        System.out.print("Qual serie voce quer ver o top 5 episodios: ");
+        String nomeSerie = scanner.nextLine();
+        
+        List<Episodio> episodiosTop5 = repository.topEpisodiosPorSerie(nomeSerie);
+        
+        System.out.print("\n");
+
+        episodiosTop5.forEach(e -> {
+
+            String tituloSerie = e.getTemporada().getSerie().getTitulo(); 
+            int numTemporada = e.getTemporada().getNumero();
+            
+            System.out.printf("Serie: %s, Temporada: %d, Episodio: %s, Nota: %.2f\n", tituloSerie, numTemporada, e.getTitulo(), e.getNota());
+        });
+
+        System.out.print("\n");
+    }
+
     private void encontrarEpisodiosPeloTrecho() {
         
         System.out.print("\nDigite o trecho: ");
@@ -129,6 +157,7 @@ public class ScreenMatchApplication implements CommandLineRunner {
         System.out.println("""
                 =-------------------------=
                 | 1 - Trecho              |
+                | 2 - Top 5               |
                 =-------------------------=
                 """);
         
@@ -139,6 +168,9 @@ public class ScreenMatchApplication implements CommandLineRunner {
         switch (command) {
             case 1:
                 encontrarEpisodiosPeloTrecho();     
+                break;
+            case 2:
+                episodiosTop5();
                 break;
         }
     }
