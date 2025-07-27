@@ -4,7 +4,6 @@ import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -15,6 +14,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 import charbitanos.demo.models.Categoria;
 import charbitanos.demo.models.Dados.DadosSerie;
+import charbitanos.demo.models.Definitivo.Episodio;
 import charbitanos.demo.models.Definitivo.Serie;
 import charbitanos.demo.repository.SerieRepository;
 import charbitanos.demo.services.ApiConf;
@@ -28,7 +28,7 @@ public class ScreenMatchApplication implements CommandLineRunner {
 		SpringApplication.run(ScreenMatchApplication.class, args);
 	}
 
-	private final int VALID_COMMANDS[] = {1,2,3,4,5,6,0};
+	private final int VALID_COMMANDS[] = {1,2,3,4,5,6,7,0};
 	private Scanner scanner = new Scanner(System.in);
 
 	private String json;
@@ -60,6 +60,7 @@ public class ScreenMatchApplication implements CommandLineRunner {
                 |   4 - Informacoes de um Titulo       |
                 |   5 - Encontrar um Titulo            |
                 |   6 - Encontrar varios Titulos       |
+                |   7 - Encontrar varios Episodios     |
                 |   0 - Sair                           |
                 =--------------------------------------=""");
 			
@@ -84,6 +85,9 @@ public class ScreenMatchApplication implements CommandLineRunner {
                 case 6:
                     if(temSerie(series))encontrarVariosTitulos();
                     break;
+                case 7:
+                    if(temSerie(series))encontrarVariosEpisodios();
+                    break;
                 default:
 					System.out.println("Saindo do programa...");
 					sair = true;
@@ -91,6 +95,53 @@ public class ScreenMatchApplication implements CommandLineRunner {
 			}
 		}
 	}
+    
+    private void encontrarEpisodiosPeloTrecho() {
+        
+        System.out.print("\nDigite o trecho: ");
+        String trechoEpisodio = scanner.nextLine();
+
+        List<Episodio> episodiosEncontrados = repository.episodiosPorTrecho(trechoEpisodio);
+        
+        System.out.print("\n");
+
+        episodiosEncontrados.forEach(e -> {
+
+            String tituloSerie = e.getTemporada().getSerie().getTitulo(); 
+            int numTemporada = e.getTemporada().getNumero();
+            
+            System.out.printf("Serie: %s, Temporada: %d, Episodio: %s\n", tituloSerie, numTemporada, e.getTitulo());
+        });
+        
+        System.out.print("\n");
+    }
+
+    private void encontrarVariosEpisodios() {
+        
+        System.out.println("""
+                =----------------------------=
+                | Encontrar varios Episodios |
+                =----------------------------=
+                """);
+        
+        System.out.println("Encontrar Episodios com:\n");
+
+        System.out.println("""
+                =-------------------------=
+                | 1 - Trecho              |
+                =-------------------------=
+                """);
+        
+        System.out.print("Digite: ");
+        int command = scanner.nextInt();
+        scanner.nextLine();
+
+        switch (command) {
+            case 1:
+                encontrarEpisodiosPeloTrecho();     
+                break;
+        }
+    }
 
     //Metodos para encontrar varios titulo
     private void encontrarTitulosApartirDaNotaETemporada() {
