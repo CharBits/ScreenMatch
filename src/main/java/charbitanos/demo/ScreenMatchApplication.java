@@ -96,8 +96,37 @@ public class ScreenMatchApplication implements CommandLineRunner {
 			}
 		}
 	}
-
+    
     //Metodos para encontrar varios Episodios
+    private void encontrarEpisodiosPeloLancamento() {
+        
+        System.out.println("""
+                =---------------------------------------------=
+                | Encontrar Episodios definindo um Ano minimo |
+                =---------------------------------------------=
+                """);
+
+        System.out.print("Serie: ");
+        String nomeSerie = scanner.nextLine();
+
+        System.out.print("Ano: ");
+        int anoLancamento = scanner.nextInt();
+        scanner.nextLine();
+
+        List<Episodio> episodiosAno = repository.episodiosPorSerieEAno(nomeSerie,anoLancamento);
+        
+        System.out.print("\n");
+
+        episodiosAno.forEach(e -> {
+            
+            int numTemporada = e.getTemporada().getNumero();
+            
+            System.out.printf("Episodio: %d, Temporada: %d, Titulo: %s, DataDeLancamento: %s\n", e.getNumero(), numTemporada, e.getTitulo(), e.getLancamento());
+        });
+    
+        System.out.print("\n");
+    }
+
     private void episodiosTop5() {
         
         System.out.println("""
@@ -118,7 +147,7 @@ public class ScreenMatchApplication implements CommandLineRunner {
             String tituloSerie = e.getTemporada().getSerie().getTitulo(); 
             int numTemporada = e.getTemporada().getNumero();
             
-            System.out.printf("Serie: %s, Temporada: %d, Episodio: %s, Nota: %.2f\n", tituloSerie, numTemporada, e.getTitulo(), e.getNota());
+            System.out.printf("Serie: %s, Episodio: %d, Temporada: %d, Titulo: %s, Nota: %.2f\n", tituloSerie, e.getNumero(), numTemporada, e.getTitulo(), e.getNota());
         });
 
         System.out.print("\n");
@@ -138,7 +167,7 @@ public class ScreenMatchApplication implements CommandLineRunner {
             String tituloSerie = e.getTemporada().getSerie().getTitulo(); 
             int numTemporada = e.getTemporada().getNumero();
             
-            System.out.printf("Serie: %s, Temporada: %d, Episodio: %s\n", tituloSerie, numTemporada, e.getTitulo());
+            System.out.printf("Serie: %s, Episodio: %d, Temporada: %d, Titulo: %s\n", tituloSerie, e.getNumero(), numTemporada, e.getTitulo());
         });
         
         System.out.print("\n");
@@ -158,6 +187,7 @@ public class ScreenMatchApplication implements CommandLineRunner {
                 =-------------------------=
                 | 1 - Trecho              |
                 | 2 - Top 5               |
+                | 3 - Ano de Lancamento   |
                 =-------------------------=
                 """);
         
@@ -172,8 +202,12 @@ public class ScreenMatchApplication implements CommandLineRunner {
             case 2:
                 episodiosTop5();
                 break;
+            case 3:
+                encontrarEpisodiosPeloLancamento();
+                break;
         }
     }
+
 
     //Metodos para encontrar varios titulo
     private void encontrarTitulosApartirDaNotaETemporada() {
